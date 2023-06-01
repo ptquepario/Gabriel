@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Meu Amor</title>
+    <style>
+        body {
+            background-color: #ffe6f2;
+            text-align: center;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            width: 100vw;
+            overflow-y: scroll;
+        }
+        
+        h1 {
+            color: #ff66cc;
+            margin-top: 50px;
+        }
+        
+        .love-message {
+            width: 600px;
+            font-size: 24px;
+            margin-top: 20px;
+            text-align: justify;
+            justify-content: center;
+            background-color: rgba(255, 255, 255, 0.651);
+            padding: 20px;
+           
+        }
+        
+        #love-meter {
+            margin-top: 50px;
+        }
+        
+        #love-meter input[type="range"] {
+            width: 300px;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+        
+        #love-meter p {
+            font-size: 18px;
+            margin-top: 10px;
+        }
+        
+        #love-meter p span {
+            font-weight: bold;
+            color: #ff66cc;
+        }
+
+        .heart {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background-image: url('growing-heart_1f497.png'); /* Substitua pelo caminho para a imagem do coração */
+            background-repeat: no-repeat;
+            background-size: contain;
+            animation: heartAnimation 3s linear infinite;
+        }
+        
+        @keyframes heartAnimation {
+            0% {
+                transform: scale(1) rotate(0deg);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.5) rotate(45deg);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1) rotate(0deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="background">
+        <!-- Adicione quantos elementos de coração desejar -->
+        <div class="heart" style="top: 20%; left: 25%;"></div>
+        <div class="heart" style="top: 50%; left: 40%;"></div>
+        <div class="heart" style="top: 70%; left: 70%;"></div>
+        <!-- -->
+    </div>
+    <h1>BOM DIA, MEU AMORRR!!!</h1>
+
+    <img style="height: 500px;" src="Imagem de fundo de tela para celular romântico elegante branco e verde.png" alt="">
+    
+    <center>
+        <div class="love-message">
+            Bom dia, meu amorrrr!
+        te desejo um bom dia, que seja maravilhoso, q vc consiga alcançar todos seus objetivos, estou aq sempre p/ oq precisar. Hj eu só quero dizer q te amo, muito!!! Hj, sinto uma imensa necessidade de expressar o quanto vc é especial e o quanto vc é importante na minha vida. Desde o momento em q vc entrou nela, tudo mudou p/ melhor, e cada dia q se passa me faz perceber o quão abençoado eu sou por vc. Você é o raio de sol que ilumina meus dias mais nublados, sunshine. Sua presença tem o poder de transformar qualquer momento comum em algo extraordinário. Cada vez q te olho, eu me perco na imensidão do teu olhar, teu sorriso é capaz de sumir com qualquer preocupação ou tristeza q eu possa estar sentindo. Com vc, sinto q posso enfrentar qualquer desafio e superar qualquer obstáculo q a vida nos apresente. Vc me ensinou o verdadeiro significado do amor e da parceria. Nossa conexão vai além das palavras e das ações. Saiba q meu amor por vc só cresce a cada instante. Prometo cuidar de vc, protegê-la e amá-la incondicionalmente. Estou aq p/ vc em todos os momentos, seja nas alegrias ou nas tristezas. Farei o possível e o impossível para fazê-la feliz, pq ver o seu sorriso é a minha maior recompensa. Obg por ser a mulher maravilhosa que vc é. Te amo mais do que as palavras podem expressar, e meu coração é todo seu. obg por ser minha melhor amiga, minha linda, maravilhosa, cheirosa, perfeita, eu te amo demaisssss e acordei sentindo necessidade de te dizer isso, n aguentava guardar, amor!!!!
+        te amo infinitamente, mil milhõesssss!!!
+        </div>
+    </center>
+    
+    <div id="love-meter">
+        <h2>Medidor de Amor</h2>
+        <input type="range" min="0" max="100" value="0" step="1" id="love-slider">
+        <p>O nosso amor está em <span id="love-percentage">100%</span></p>
+    </div>
+    
+    <script>
+        const loveSlider = document.getElementById("love-slider");
+        const lovePercentage = document.getElementById("love-percentage");
+        
+        loveSlider.addEventListener("input", function() {
+            const percentage = loveSlider.value;
+            lovePercentage.textContent = percentage + "%";
+        });
+    </script>
+</body>
+</html>
