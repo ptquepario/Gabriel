@@ -3,118 +3,138 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Simulado Técnico</title>
+  <title>Simulado JS Cursos</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
   <style>
+    * {
+      box-sizing: border-box;
+      padding: 0;
+      margin: 0;
+    }
+
     body {
       font-family: 'Poppins', sans-serif;
-      background-color: #f4f4f4;
-      color: #333;
-      margin: 0;
-      padding: 20px;
+      background: linear-gradient(135deg, #fff, #f9f9f9);
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
+      color: #333;
     }
 
     h1 {
+      color: #e63946;
       font-size: 2.5rem;
-      color: #e63946; /* Vermelho */
+      margin-bottom: 30px;
+    }
+
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 600px;
       text-align: center;
-      margin-bottom: 20px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      font-size: 1rem;
+      margin-top: 10px;
+      border: 2px solid #e63946;
+      border-radius: 8px;
+      outline: none;
+      transition: 0.3s ease;
+    }
+
+    input[type="text"]:focus {
+      border-color: #c62828;
+      box-shadow: 0 0 5px rgba(230, 57, 70, 0.5);
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 12px 24px;
+      font-size: 1rem;
+      color: white;
+      background-color: #e63946;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      animation: pulse 1.2s infinite;
+    }
+
+    button:hover {
+      background-color: #c62828;
+    }
+
+    button:active {
+      transform: scale(0.97);
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(230, 57, 70, 0.7); }
+      70% { box-shadow: 0 0 0 10px rgba(230, 57, 70, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(230, 57, 70, 0); }
     }
 
     .hidden { display: none; }
 
-    .question { 
-      margin-bottom: 20px; 
-      background-color: #ffffff; 
+    .timer {
+      font-weight: bold;
+      color: #e63946;
+      font-size: 1.4rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .clock-icon {
+      animation: rotate 2s linear infinite;
+      font-size: 1.5rem;
+    }
+
+    @keyframes rotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .question {
+      margin-bottom: 20px;
+      background-color: #ffffff;
       padding: 15px;
       border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+      text-align: left;
     }
 
-    .timer { 
-      font-weight: bold; 
-      color: #e63946; 
-      font-size: 1.2rem; 
+    label {
+      display: block;
+      margin-bottom: 5px;
     }
-
-    button {
-      padding: 12px 24px;
-      background-color: #e63946;
-      color: white;
-      font-size: 1rem;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background-color 0.3s ease, transform 0.2s ease;
-    }
-
-    button:hover {
-      background-color: #d32f2f;
-    }
-
-    button:active {
-      transform: scale(0.98);
-    }
-
-    input[type="radio"] {
-      margin-right: 10px;
-    }
-
-    #form-section {
-      width: 100%;
-      max-width: 600px;
-      margin: auto;
-      text-align: center;
-    }
-
-    #quiz-form {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .question label {
-      font-size: 1rem;
-      margin-bottom: 8px;
-    }
-
-    #result-section {
-      text-align: center;
-    }
-
-    .result-box {
-      background-color: #ffffff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-
   </style>
 </head>
 <body>
-  <div id="form-section">
-    <h1>Simulado Técnico - ETE | IFPE | SESI | SENAI</h1>
-    <label for="name">Nome completo:</label>
-    <input type="text" id="name" required />
-    <br><br>
-    <button onclick="startSimulado()">Iniciar Simulado</button>
+  <div class="container" id="form-section">
+    <h1>Simulado JS Cursos</h1>
+    <input type="text" id="name" placeholder="Digite seu nome completo" required />
+    <button onclick="confirmStart()">Iniciar Simulado</button>
   </div>
 
-  <div id="quiz-section" class="hidden">
-    <p class="timer">Tempo restante: <span id="timer">30:00</span></p>
+  <div class="container hidden" id="quiz-section">
+    <p class="timer"><span class="clock-icon">🕒</span> Tempo restante: <span id="timer">30:00</span></p>
     <form id="quiz-form"></form>
     <button onclick="submitQuiz()">Enviar Respostas</button>
   </div>
 
-  <div id="result-section" class="hidden">
+  <div class="container hidden" id="result-section">
     <h2>Resultado</h2>
-    <div class="result-box">
-      <p id="user-name"></p>
-      <p id="score"></p>
-    </div>
+    <p id="user-name"></p>
+    <p id="score"></p>
   </div>
 
   <script>
@@ -135,15 +155,17 @@
     let timerInterval;
     let timeLeft = 1800;
 
-    function startSimulado() {
+    function confirmStart() {
       const name = document.getElementById('name').value.trim();
       if (!name) return alert("Digite seu nome!");
+      const confirmStart = confirm("Você terá 30 minutos para completar o simulado. Deseja iniciar agora?");
+      if (confirmStart) startSimulado();
+    }
 
+    function startSimulado() {
       selectedQuestions = questions.sort(() => 0.5 - Math.random()).slice(0, 10);
-
       document.getElementById('form-section').classList.add('hidden');
       document.getElementById('quiz-section').classList.remove('hidden');
-
       renderQuiz();
       startTimer();
     }
@@ -156,8 +178,8 @@
         div.className = 'question';
         div.innerHTML = `<p><strong>${index + 1}.</strong> ${q.q}</p>` +
           q.a.map((alt, i) => `
-            <label><input type="radio" name="q${index}" value="${i}" required /> ${alt}</label><br>`
-          ).join('');
+            <label><input type="radio" name="q${index}" value="${i}" required /> ${alt}</label>
+          `).join('');
         form.appendChild(div);
       });
     }
@@ -181,13 +203,26 @@
     }
 
     function submitQuiz() {
-      clearInterval(timerInterval);
       const form = document.getElementById('quiz-form');
-      let score = 0;
+      let allAnswered = true;
 
+      selectedQuestions.forEach((_, i) => {
+        const radios = form[`q${i}`];
+        if (!radios || ![...radios].some(r => r.checked)) {
+          allAnswered = false;
+        }
+      });
+
+      if (!allAnswered) {
+        alert("Você precisa responder todas as questões antes de enviar.");
+        return;
+      }
+
+      clearInterval(timerInterval);
+      let score = 0;
       selectedQuestions.forEach((q, i) => {
-        const userAnswer = form[`q${i}`].value;
-        if (parseInt(userAnswer) === q.c) score++;
+        const answer = form[`q${i}`].value;
+        if (parseInt(answer) === q.c) score++;
       });
 
       document.getElementById('quiz-section').classList.add('hidden');
