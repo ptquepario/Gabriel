@@ -4,17 +4,99 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Simulado Técnico</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: auto; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f4f4f4;
+      color: #333;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      color: #e63946; /* Vermelho */
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
     .hidden { display: none; }
-    .question { margin-bottom: 20px; }
-    .timer { font-weight: bold; color: red; }
-    button { padding: 10px 20px; margin-top: 20px; }
+
+    .question { 
+      margin-bottom: 20px; 
+      background-color: #ffffff; 
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .timer { 
+      font-weight: bold; 
+      color: #e63946; 
+      font-size: 1.2rem; 
+    }
+
+    button {
+      padding: 12px 24px;
+      background-color: #e63946;
+      color: white;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #d32f2f;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    input[type="radio"] {
+      margin-right: 10px;
+    }
+
+    #form-section {
+      width: 100%;
+      max-width: 600px;
+      margin: auto;
+      text-align: center;
+    }
+
+    #quiz-form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .question label {
+      font-size: 1rem;
+      margin-bottom: 8px;
+    }
+
+    #result-section {
+      text-align: center;
+    }
+
+    .result-box {
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
   </style>
 </head>
 <body>
-  <h1>Simulado Técnico - ETE | IFPE | SESI | SENAI</h1>
   <div id="form-section">
+    <h1>Simulado Técnico - ETE | IFPE | SESI | SENAI</h1>
     <label for="name">Nome completo:</label>
     <input type="text" id="name" required />
     <br><br>
@@ -29,8 +111,10 @@
 
   <div id="result-section" class="hidden">
     <h2>Resultado</h2>
-    <p id="user-name"></p>
-    <p id="score"></p>
+    <div class="result-box">
+      <p id="user-name"></p>
+      <p id="score"></p>
+    </div>
   </div>
 
   <script>
@@ -40,7 +124,6 @@
       { q: "O que é fotossíntese?", a: ["Processo de respiração animal", "Reprodução das plantas", "Produção de energia solar", "Produção de alimento pela planta"], c: 3 },
       { q: "Qual número é divisível por 3 e 5?", a: ["15", "8", "10", "20"], c: 0 },
       { q: "Qual a função do predicado?", a: ["Dar emoção ao texto", "Indicar ação ou estado do sujeito", "Nomear o sujeito", "Descrever o ambiente"], c: 1 },
-      // +25 questões exemplo abaixo:
       ...Array.from({ length: 25 }, (_, i) => ({
         q: `Questão exemplo ${i + 6}?`,
         a: ["A", "B", "C", "D"],
