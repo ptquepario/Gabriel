@@ -1,55 +1,117 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-  <title>Dúvida, amor...</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simulado Técnico</title>
   <style>
-    body {
-      text-align: center;
-      font-family: Arial, sans-serif;
-      margin-top: 100px;
-    }
-
-    h1 {
-      margin-bottom: 30px;
-    }
-
-    .button {
-      display: inline-block;
-      margin: 10px;
-      padding: 15px 30px;
-      font-size: 18px;
-      text-align: center;
-      text-decoration: none;
-      border-radius: 5px;
-      cursor: pointer;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-    }
-
-    .no-message {
-      color: red;
-      font-weight: bold;
-      margin-top: 20px;
-    }
+    body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: auto; }
+    .hidden { display: none; }
+    .question { margin-bottom: 20px; }
+    .timer { font-weight: bold; color: red; }
+    button { padding: 10px 20px; margin-top: 20px; }
   </style>
-  <script>
-    function showNoMessage() {
-      var message = document.getElementById("noMessage");
-      message.style.display = "block";
-    }
-  </script>
 </head>
 <body>
-  <audio autoplay>
-    <source src="X2Download.app - ｍａｇｉｃ (lofi hip hop) (128 kbps).mp3">
-    Your browser does not support the audio element.
-  </audio>
-  <h1>Quer me ver domingo, gatinha?</h1>
- 
-<a href="video.html" target="_blank" autoplay controls>
-  <button class="button">Sim</button></a>
-  <button class="button" onclick="showNoMessage()">Não</button>
-  <p id="noMessage" class="no-message" style="display: none;">Tente novamente</p>
+  <h1>Simulado Técnico - ETE | IFPE | SESI | SENAI</h1>
+  <div id="form-section">
+    <label for="name">Nome completo:</label>
+    <input type="text" id="name" required />
+    <br><br>
+    <button onclick="startSimulado()">Iniciar Simulado</button>
+  </div>
+
+  <div id="quiz-section" class="hidden">
+    <p class="timer">Tempo restante: <span id="timer">30:00</span></p>
+    <form id="quiz-form"></form>
+    <button onclick="submitQuiz()">Enviar Respostas</button>
+  </div>
+
+  <div id="result-section" class="hidden">
+    <h2>Resultado</h2>
+    <p id="user-name"></p>
+    <p id="score"></p>
+  </div>
+
+  <script>
+    const questions = [
+      { q: "Qual é o plural de 'cidadão'?", a: ["Cidadões", "Cidadãos", "Cidadãs", "Cidadãez"], c: 1 },
+      { q: "Quanto é 12 x 8?", a: ["96", "88", "102", "108"], c: 0 },
+      { q: "O que é fotossíntese?", a: ["Processo de respiração animal", "Reprodução das plantas", "Produção de energia solar", "Produção de alimento pela planta"], c: 3 },
+      { q: "Qual número é divisível por 3 e 5?", a: ["15", "8", "10", "20"], c: 0 },
+      { q: "Qual a função do predicado?", a: ["Dar emoção ao texto", "Indicar ação ou estado do sujeito", "Nomear o sujeito", "Descrever o ambiente"], c: 1 },
+      // +25 questões exemplo abaixo:
+      ...Array.from({ length: 25 }, (_, i) => ({
+        q: `Questão exemplo ${i + 6}?`,
+        a: ["A", "B", "C", "D"],
+        c: Math.floor(Math.random() * 4)
+      }))
+    ];
+
+    let selectedQuestions = [];
+    let timerInterval;
+    let timeLeft = 1800;
+
+    function startSimulado() {
+      const name = document.getElementById('name').value.trim();
+      if (!name) return alert("Digite seu nome!");
+
+      selectedQuestions = questions.sort(() => 0.5 - Math.random()).slice(0, 10);
+
+      document.getElementById('form-section').classList.add('hidden');
+      document.getElementById('quiz-section').classList.remove('hidden');
+
+      renderQuiz();
+      startTimer();
+    }
+
+    function renderQuiz() {
+      const form = document.getElementById('quiz-form');
+      form.innerHTML = '';
+      selectedQuestions.forEach((q, index) => {
+        const div = document.createElement('div');
+        div.className = 'question';
+        div.innerHTML = `<p><strong>${index + 1}.</strong> ${q.q}</p>` +
+          q.a.map((alt, i) => `
+            <label><input type="radio" name="q${index}" value="${i}" required /> ${alt}</label><br>`
+          ).join('');
+        form.appendChild(div);
+      });
+    }
+
+    function startTimer() {
+      updateTimer();
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          submitQuiz();
+        }
+        updateTimer();
+      }, 1000);
+    }
+
+    function updateTimer() {
+      const min = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+      const sec = (timeLeft % 60).toString().padStart(2, '0');
+      document.getElementById('timer').textContent = `${min}:${sec}`;
+    }
+
+    function submitQuiz() {
+      clearInterval(timerInterval);
+      const form = document.getElementById('quiz-form');
+      let score = 0;
+
+      selectedQuestions.forEach((q, i) => {
+        const userAnswer = form[`q${i}`].value;
+        if (parseInt(userAnswer) === q.c) score++;
+      });
+
+      document.getElementById('quiz-section').classList.add('hidden');
+      document.getElementById('result-section').classList.remove('hidden');
+      document.getElementById('user-name').textContent = `Aluno: ${document.getElementById('name').value}`;
+      document.getElementById('score').textContent = `Você acertou ${score} de 10 questões.`;
+    }
+  </script>
 </body>
 </html>
