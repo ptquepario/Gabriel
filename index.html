@@ -167,17 +167,23 @@
 
   <script>
     const questions = [
-      { q: "Qual é o plural de 'cidadão'?", a: ["Cidadões", "Cidadãos", "Cidadãs", "Cidadãez"], c: 1 },
-      { q: "Quanto é 12 x 8?", a: ["96", "88", "102", "108"], c: 0 },
-      { q: "O que é fotossíntese?", a: ["Processo de respiração animal", "Reprodução das plantas", "Produção de energia solar", "Produção de alimento pela planta"], c: 3 },
-      { q: "Qual número é divisível por 3 e 5?", a: ["15", "8", "10", "20"], c: 0 },
-      { q: "Qual a função do predicado?", a: ["Dar emoção ao texto", "Indicar ação ou estado do sujeito", "Nomear o sujeito", "Descrever o ambiente"], c: 1 },
-      ...Array.from({ length: 25 }, (_, i) => ({
-        q: `Questão exemplo ${i + 6}?`,
-        a: ["A", "B", "C", "D"],
-        c: Math.floor(Math.random() * 4)
-      }))
-    ];
+  { q: "Qual é a solução da equação 3x − 5 = 16?", a: ["x = 3", "x = 5", "x = 7", "x = 8"], c: 3 },
+  { q: "Simplifique a expressão: 5x + 3x − 2x", a: ["6x", "7x", "8x", "10x"], c: 1 },
+  { q: "Resolva a equação: 2(x − 4) = 10", a: ["x = 3", "x = 7", "x = 9", "x = 5"], c: 1 },
+  { q: "Qual é o valor de 2⁵?", a: ["10", "25", "32", "64"], c: 2 },
+  { q: "Calcule: 3/4 + 5/8", a: ["1", "1 3/8", "1 1/2", "2"], c: 1 },
+  { q: "Converta 0,75 para fração.", a: ["3/4", "1/2", "2/3", "4/5"], c: 0 },
+  { q: "Qual é o valor de x na equação 4x + 7 = 23?", a: ["x = 3", "x = 4", "x = 5", "x = 6"], c: 2 },
+  { q: "Qual é a área de um triângulo de base 6 cm e altura 8 cm?", a: ["24 cm²", "48 cm²", "14 cm²", "36 cm²"], c: 0 },
+  { q: "Qual é a soma dos ângulos internos de um triângulo?", a: ["90°", "180°", "270°", "360°"], c: 1 },
+  { q: "Qual é o valor de 7! (7 fatorial)?", a: ["5040", "720", "1280", "4032"], c: 0 },
+  { q: "Resolva: 5(x + 3) = 20", a: ["x = 1", "x = 2", "x = 3", "x = 4"], c: 1 },
+  { q: "Se 2x + 3 = 9, qual o valor de x?", a: ["x = 2", "x = 3", "x = 4", "x = 5"], c: 0 },
+  { q: "Converta 30% para fração.", a: ["3/10", "1/3", "3/5", "2/5"], c: 0 },
+  { q: "Resolva a equação: 3(x − 2) = 12", a: ["x = 4", "x = 6", "x = 5", "x = 3"], c: 1 },
+  { q: "Qual é a raiz quadrada de 81?", a: ["9", "8", "7", "6"], c: 0 }
+];
+
 
     let selectedQuestions = [];
     let timerInterval;
