@@ -1,223 +1,201 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
   <title>Simulado JS Cursos</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-  <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-database-compat.js"></script>
   <style>
-    * { box-sizing: border-box; padding: 0; margin: 0; }
     body {
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #fff, #f9f9f9);
-      display: flex; justify-content: center; align-items: center;
-      min-height: 100vh; color: #333; padding: 20px;
+      font-family: Arial, sans-serif;
+      background: #f8f8f8;
+      margin: 0;
+      padding: 0;
     }
     .container {
+      max-width: 600px;
+      margin: 50px auto;
       background: white;
       padding: 30px;
-      border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-      width: 100%;
-      max-width: 600px;
-      text-align: center;
-      margin-bottom: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
-    h1, h2 { color: #e63946; margin-bottom: 20px; }
-    .logo { max-width: 240px; margin-bottom: 20px; }
+    h2 {
+      color: #d62828;
+      text-align: center;
+    }
     input, textarea, select {
-      width: 100%; padding: 12px; font-size: 1rem;
-      margin-top: 10px; margin-bottom: 10px;
-      border: 2px solid #e63946; border-radius: 8px; outline: none;
+      width: 100%;
+      margin-bottom: 15px;
+      padding: 10px;
+      border: 2px solid #d62828;
+      border-radius: 5px;
     }
     button {
-      padding: 12px 24px; font-size: 1rem; color: white;
-      background-color: #e63946; border: none; border-radius: 8px;
-      cursor: pointer; transition: all 0.3s ease;
+      background-color: #d62828;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 5px;
     }
-    button:hover { background-color: #c62828; }
-    .hidden { display: none; }
-    .timer {
-      font-weight: bold; color: #e63946;
-      font-size: 1.4rem; display: flex; justify-content: center; gap: 10px;
+    #formAdicionar {
+      display: none;
     }
-    .question {
-      margin-bottom: 20px; text-align: left;
-      background-color: #ffffff; padding: 15px;
-      border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    #cadeadoBtn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
     }
-    label { display: block; cursor: pointer; margin-bottom: 5px; }
-    label span {
-      display: block; padding: 8px 12px; background-color: #f0f0f0;
-      border-radius: 6px; transition: 0.3s ease;
+    #cadeadoBtn img {
+      width: 32px;
+      height: 32px;
     }
-    input[type="radio"] { display: none; }
-    input[type="radio"]:checked + span {
-      background-color: #e63946; color: white; transform: scale(1.02);
+    .questao {
+      background: #fff4f4;
+      border: 1px solid #ddd;
+      border-left: 4px solid #d62828;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 5px;
+    }
+    .questao img {
+      max-width: 100%;
+      margin-top: 10px;
     }
   </style>
 </head>
 <body>
 
-  <div class="container" id="form-section">
-    <img src="iv_1_jscursos.png" alt="Logo JS Cursos" class="logo" />
-    <h1>Simulado JS Cursos</h1>
-    <input type="text" id="name" placeholder="Digite seu nome completo" required />
-    <button onclick="confirmStart()">Iniciar Simulado</button>
-  </div>
+<div class="container">
+  <h2>Simulado JS Cursos</h2>
+  <div id="questoesContainer"></div>
+</div>
 
-  <div class="container hidden" id="quiz-section">
-    <p class="timer">🕒 Tempo restante: <span id="timer">30:00</span></p>
-    <form id="quiz-form"></form>
-    <button onclick="submitQuiz()">Enviar Respostas</button>
-  </div>
+<!-- Formulário oculto para adicionar questões -->
+<div class="container" id="formAdicionar">
+  <h2>Adicionar Questão</h2>
+  <textarea id="pergunta" placeholder="Digite a nova pergunta"></textarea>
+  <input type="text" id="alt1" placeholder="Alternativa 1">
+  <input type="text" id="alt2" placeholder="Alternativa 2">
+  <input type="text" id="alt3" placeholder="Alternativa 3">
+  <input type="text" id="alt4" placeholder="Alternativa 4">
+  <select id="correta">
+    <option value="">Selecione a alternativa correta</option>
+    <option value="1">Alternativa 1</option>
+    <option value="2">Alternativa 2</option>
+    <option value="3">Alternativa 3</option>
+    <option value="4">Alternativa 4</option>
+  </select>
+  <input type="file" id="imagem">
+  <button onclick="salvarQuestao()">Salvar Questão</button>
+</div>
 
-  <div class="container hidden" id="result-section">
-    <h2>Resultado</h2>
-    <p id="user-name"></p>
-    <p id="score"></p>
-  </div>
+<!-- Botão cadeado -->
+<button id="cadeadoBtn" onclick="pedirSenha()">
+  <img src="https://img.icons8.com/ios-filled/50/lock--v1.png" alt="Cadeado">
+</button>
 
-  <div class="container" id="admin-section">
-    <h2>Adicionar Questão</h2>
-    <input type="password" id="admin-password" placeholder="Senha de administrador" />
-    <textarea id="new-question" placeholder="Digite a nova pergunta"></textarea>
-    <input type="text" id="alt0" placeholder="Alternativa 1">
-    <input type="text" id="alt1" placeholder="Alternativa 2">
-    <input type="text" id="alt2" placeholder="Alternativa 3">
-    <input type="text" id="alt3" placeholder="Alternativa 4">
-    <select id="correct-index">
-      <option value="">Selecione a alternativa correta</option>
-      <option value="0">Alternativa 1</option>
-      <option value="1">Alternativa 2</option>
-      <option value="2">Alternativa 3</option>
-      <option value="3">Alternativa 4</option>
-    </select>
-    <button onclick="addQuestion()">Salvar Questão</button>
-  </div>
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
 
-  <script>
-    // 👉 Cole suas credenciais aqui:
-    const firebaseConfig = {
-      apiKey: "SUA_API_KEY",
-      authDomain: "SEU_DOMINIO.firebaseapp.com",
-      databaseURL: "https://SEU_PROJETO.firebaseio.com",
-      projectId: "SEU_ID",
-      storageBucket: "SEU_BUCKET.appspot.com",
-      messagingSenderId: "ID_MENSAGENS",
-      appId: "APP_ID"
+<script>
+  // TODO: substitua pelos dados do seu projeto Firebase
+  const firebaseConfig = {
+    apiKey: "SUA_API_KEY",
+    authDomain: "SEU_DOMINIO.firebaseapp.com",
+    databaseURL: "https://SEU_PROJETO.firebaseio.com",
+    projectId: "SEU_PROJETO",
+    storageBucket: "SEU_PROJETO.appspot.com",
+    messagingSenderId: "SEU_SENDER_ID",
+    appId: "SEU_APP_ID"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+  const storage = firebase.storage();
+
+  const senhaAdmin = "123456"; // você pode trocar isso
+
+  function pedirSenha() {
+    const senha = prompt("Digite a senha de administrador:");
+    if (senha === senhaAdmin) {
+      document.getElementById('formAdicionar').style.display = 'block';
+    } else {
+      alert("Senha incorreta!");
+    }
+  }
+
+  function salvarQuestao() {
+    const pergunta = document.getElementById('pergunta').value;
+    const alt1 = document.getElementById('alt1').value;
+    const alt2 = document.getElementById('alt2').value;
+    const alt3 = document.getElementById('alt3').value;
+    const alt4 = document.getElementById('alt4').value;
+    const correta = document.getElementById('correta').value;
+    const imagemFile = document.getElementById('imagem').files[0];
+
+    if (!pergunta || !alt1 || !alt2 || !alt3 || !alt4 || !correta) {
+      alert("Preencha todos os campos.");
+      return;
+    }
+
+    const novaQuestaoRef = db.ref("questoes").push();
+    const questaoId = novaQuestaoRef.key;
+
+    const salvarNoDB = (urlImagem = "") => {
+      novaQuestaoRef.set({
+        pergunta,
+        alternativas: [alt1, alt2, alt3, alt4],
+        correta,
+        imagem: urlImagem
+      });
+      alert("Questão salva!");
+      document.getElementById("formAdicionar").reset();
     };
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
-    let selectedQuestions = [];
-    let timeLeft = 1800;
-    let timerInterval;
-
-    function confirmStart() {
-      const name = document.getElementById('name').value.trim();
-      if (!name.includes(" ")) {
-        alert("Digite seu nome completo.");
-        return;
-      }
-      if (confirm("Você terá 30 minutos. Deseja iniciar agora?")) {
-        startSimulado();
-      }
-    }
-
-    function startSimulado() {
-      db.ref('questions').once('value', snapshot => {
-        const extra = snapshot.val() ? Object.values(snapshot.val()) : [];
-        selectedQuestions = extra.sort(() => 0.5 - Math.random()).slice(0, 10);
-        document.getElementById('form-section').classList.add('hidden');
-        document.getElementById('quiz-section').classList.remove('hidden');
-        renderQuiz();
-        startTimer();
-      });
-    }
-
-    function renderQuiz() {
-      const form = document.getElementById('quiz-form');
-      form.innerHTML = '';
-      selectedQuestions.forEach((q, i) => {
-        const div = document.createElement('div');
-        div.className = 'question';
-        let html = `<p><strong>${i + 1}.</strong> ${q.q}</p>`;
-        q.a.forEach((alt, j) => {
-          html += `
-            <label>
-              <input type="radio" name="q${i}" value="${j}" required />
-              <span>${alt}</span>
-            </label>
-          `;
+    if (imagemFile) {
+      const storageRef = storage.ref("imagens/" + questaoId);
+      storageRef.put(imagemFile).then(snapshot => {
+        snapshot.ref.getDownloadURL().then(url => {
+          salvarNoDB(url);
         });
-        div.innerHTML = html;
-        form.appendChild(div);
       });
+    } else {
+      salvarNoDB();
     }
+  }
 
-    function startTimer() {
-      updateTimer();
-      timerInterval = setInterval(() => {
-        timeLeft--;
-        if (timeLeft <= 0) {
-          clearInterval(timerInterval);
-          submitQuiz();
+  function carregarQuestoes() {
+    db.ref("questoes").on("value", snapshot => {
+      const container = document.getElementById("questoesContainer");
+      container.innerHTML = "";
+      snapshot.forEach(child => {
+        const q = child.val();
+        const div = document.createElement("div");
+        div.className = "questao";
+        div.innerHTML = `<strong>${q.pergunta}</strong><br><br>
+          A) ${q.alternativas[0]}<br>
+          B) ${q.alternativas[1]}<br>
+          C) ${q.alternativas[2]}<br>
+          D) ${q.alternativas[3]}<br>
+          <em>Correta: ${q.alternativas[q.correta - 1]}</em>`;
+        if (q.imagem) {
+          const img = document.createElement("img");
+          img.src = q.imagem;
+          div.appendChild(img);
         }
-        updateTimer();
-      }, 1000);
-    }
-
-    function updateTimer() {
-      const min = String(Math.floor(timeLeft / 60)).padStart(2, '0');
-      const sec = String(timeLeft % 60).padStart(2, '0');
-      document.getElementById('timer').textContent = `${min}:${sec}`;
-    }
-
-    function submitQuiz() {
-      clearInterval(timerInterval);
-      let score = 0;
-      const form = document.getElementById('quiz-form');
-      selectedQuestions.forEach((q, i) => {
-        const answer = form[`q${i}`].value;
-        if (parseInt(answer) === q.c) score++;
+        container.appendChild(div);
       });
-      document.getElementById('quiz-section').classList.add('hidden');
-      document.getElementById('result-section').classList.remove('hidden');
-      document.getElementById('user-name').textContent = `Aluno: ${document.getElementById('name').value}`;
-      document.getElementById('score').textContent = `Você acertou ${score} de ${selectedQuestions.length} questões.`;
-    }
+    });
+  }
 
-    function addQuestion() {
-      const pass = document.getElementById('admin-password').value;
-      if (pass !== "minhasenha123") {
-        alert("Senha incorreta.");
-        return;
-      }
+  carregarQuestoes();
+</script>
 
-      const q = document.getElementById('new-question').value;
-      const a = [
-        document.getElementById('alt0').value,
-        document.getElementById('alt1').value,
-        document.getElementById('alt2').value,
-        document.getElementById('alt3').value
-      ];
-      const c = parseInt(document.getElementById('correct-index').value);
-
-      if (!q || a.some(x => !x) || isNaN(c)) {
-        alert("Preencha todos os campos corretamente.");
-        return;
-      }
-
-      const newQuestion = { q, a, c };
-      db.ref('questions').push(newQuestion, (err) => {
-        if (err) alert("Erro ao salvar.");
-        else alert("Questão salva com sucesso!");
-      });
-    }
-  </script>
 </body>
 </html>
