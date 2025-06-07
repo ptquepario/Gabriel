@@ -15,12 +15,13 @@
       margin: 0;
     }
 
-    .container {
+    .container, #simuladoContainer {
       text-align: center;
       border: 1px solid #ddd;
       padding: 30px;
       border-radius: 10px;
       box-shadow: 0 0 10px #ccc;
+      background: white;
     }
 
     .logo {
@@ -59,7 +60,7 @@
       text-align: center;
     }
 
-    .hidden {
+    #simuladoContainer {
       display: none;
     }
   </style>
@@ -70,11 +71,16 @@
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-storage-compat.js"></script>
 </head>
 <body>
-  <div class="container">
-    <img src="logo.png" alt="Logo JS Cursos" class="logo">
+  <div class="container" id="entradaContainer">
+    <img src="iv_1_jscursos.png" alt="Logo JS Cursos" class="logo">
     <h1>Simulado JS Cursos</h1>
     <input type="text" id="nome" placeholder="Digite seu nome completo">
     <button onclick="iniciarSimulado()">Iniciar Simulado</button>
+  </div>
+
+  <div id="simuladoContainer">
+    <h2>Bem-vindo ao Simulado!</h2>
+    <p>Em breve as questões aparecerão aqui.</p>
   </div>
 
   <div id="cadeado" onclick="mostrarSenha()">🔒</div>
@@ -99,17 +105,15 @@
   </div>
 
   <script>
-    // Firebase config — SUBSTITUA AQUI PELOS DADOS DO SEU PROJETO
     const firebaseConfig = {
-  apiKey: "AIzaSyCnDPoNtE_7YS4wcFdStOPxkwqRnFqXiAQ",
-  authDomain: "simuladojscursos.firebaseapp.com",
-  databaseURL: "https://simuladojscursos-default-rtdb.firebaseio.com",
-  projectId: "simuladojscursos",
-  storageBucket: "simuladojscursos.firebasestorage.app",
-  messagingSenderId: "917927200452",
-  appId: "1:917927200452:web:6cac26eb1676e8500e6b91",
-  measurementId: "G-NJ638JGGXM"
-};
+      apiKey: "AIzaSyCnDPoNtE_7YS4wcFdStOPxkwqRnFqXiAQ",
+      authDomain: "simuladojscursos.firebaseapp.com",
+      databaseURL: "https://simuladojscursos-default-rtdb.firebaseio.com",
+      projectId: "simuladojscursos",
+      storageBucket: "simuladojscursos.appspot.com",
+      messagingSenderId: "917927200452",
+      appId: "1:917927200452:web:6cac26eb1676e8500e6b91"
+    };
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
@@ -121,7 +125,9 @@
         alert("Digite seu nome para iniciar.");
         return;
       }
-      alert(`Simulado iniciado para ${nome}`);
+
+      document.getElementById('entradaContainer').style.display = 'none';
+      document.getElementById('simuladoContainer').style.display = 'block';
     }
 
     function mostrarSenha() {
@@ -156,24 +162,32 @@
 
       if (imagemFile) {
         const storageRef = storage.ref('imagens/' + imagemFile.name);
-        storageRef.put(imagemFile).then(snapshot => {
-          snapshot.ref.getDownloadURL().then(url => {
+        storageRef.put(imagemFile)
+          .then(snapshot => snapshot.ref.getDownloadURL())
+          .then(url => {
             novaQuestao.imagem = url;
-            db.ref('questoes').push(novaQuestao);
-            alert("Questão com imagem adicionada!");
+            return db.ref('questoes').push(novaQuestao);
+          })
+          .then(() => {
+            alert("✅ Questão com imagem adicionada com sucesso!");
+            limparFormulario();
+          })
+          .catch(error => {
+            alert("Erro ao adicionar questão com imagem: " + error.message);
           });
-        }).catch(error => {
-          alert("Erro ao enviar imagem: " + error.message);
-        });
       } else {
-        db.ref('questoes').push(novaQuestao).then(() => {
-          alert("Questão adicionada com sucesso!");
-        }).catch(error => {
-          alert("Erro ao salvar questão: " + error.message);
-        });
+        db.ref('questoes').push(novaQuestao)
+          .then(() => {
+            alert("✅ Questão adicionada com sucesso!");
+            limparFormulario();
+          })
+          .catch(error => {
+            alert("Erro ao adicionar questão: " + error.message);
+          });
       }
+    }
 
-      // Limpa campos
+    function limparFormulario() {
       document.getElementById('pergunta').value = "";
       document.getElementById('alt1').value = "";
       document.getElementById('alt2').value = "";
