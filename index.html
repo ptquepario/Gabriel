@@ -7,10 +7,10 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      text-align: center;
       background: #fff;
       margin: 0;
       padding: 0;
+      text-align: center;
     }
     .container {
       margin-top: 60px;
@@ -22,12 +22,13 @@
       border-radius: 12px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
       margin-bottom: 40px;
+      max-width: 90%;
     }
     input, textarea, select {
       display: block;
       margin: 10px auto;
       padding: 10px;
-      width: 80%;
+      width: 90%;
       max-width: 400px;
       border: 2px solid red;
       border-radius: 6px;
@@ -42,7 +43,7 @@
       font-size: 16px;
       margin-top: 10px;
     }
-    #formQuestao {
+    #formQuestao, #simulado, #resultado {
       display: none;
     }
     #cadeado {
@@ -52,6 +53,17 @@
       font-size: 28px;
       cursor: pointer;
     }
+    .questao {
+      margin: 20px auto;
+      padding: 20px;
+      border: 2px solid #ccc;
+      border-radius: 12px;
+      max-width: 90%;
+    }
+    .questao img {
+      max-width: 100%;
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
@@ -59,11 +71,21 @@
   <div id="cadeado">🔒</div>
 
   <div class="container">
-    <div class="card">
-      <h2>Bem-vindo ao Simulado!</h2>
-      <p>Em breve as questões aparecerão aqui.</p>
+    <!-- TELA INICIAL -->
+    <div id="inicio" class="card">
+      <img src="logo.png" alt="Logo do Curso" style="max-width: 200px;">
+      <h2>Simulado Online</h2>
+      <input type="text" id="nomeAluno" placeholder="Digite seu nome completo">
+      <button onclick="iniciarSimulado()">Iniciar Simulado</button>
     </div>
 
+    <!-- QUESTÕES -->
+    <div id="simulado"></div>
+
+    <!-- RESULTADO -->
+    <div id="resultado" class="card"></div>
+
+    <!-- FORMULÁRIO PARA ADICIONAR QUESTÃO -->
     <div id="formQuestao">
       <h2>Adicionar Questão</h2>
       <input type="password" id="senha" placeholder="Senha">
@@ -102,7 +124,12 @@
   </script>
 
   <script>
-    const senhaCorreta = "1234"; // Altere sua senha aqui
+    let questoes = [];
+    let indexAtual = 0;
+    let acertos = 0;
+    let nomeAluno = "";
+
+    const senhaCorreta = "1234"; // Altere aqui
 
     document.getElementById('cadeado').onclick = function () {
       const senha = prompt("Digite a senha:");
@@ -112,6 +139,73 @@
         alert("Senha incorreta!");
       }
     };
+
+    function iniciarSimulado() {
+      nomeAluno = document.getElementById('nomeAluno').value.trim();
+      if (!nomeAluno) {
+        alert("Digite seu nome completo.");
+        return;
+      }
+      document.getElementById('inicio').style.display = 'none';
+      carregarQuestoes();
+    }
+
+    function carregarQuestoes() {
+      db.ref('questoes').once('value', snapshot => {
+        questoes = [];
+        snapshot.forEach(child => {
+          questoes.push(child.val());
+        });
+        mostrarQuestao();
+      });
+    }
+
+    function mostrarQuestao() {
+      const simuladoDiv = document.getElementById('simulado');
+      simuladoDiv.innerHTML = '';
+      document.getElementById('simulado').style.display = 'block';
+
+      if (indexAtual >= questoes.length) {
+        mostrarResultado();
+        return;
+      }
+
+      const q = questoes[indexAtual];
+      const questaoDiv = document.createElement('div');
+      questaoDiv.className = 'questao';
+
+      questaoDiv.innerHTML = `
+        <h3>${q.pergunta}</h3>
+        ${q.imagem ? `<img src="${q.imagem}" alt="Imagem da Questão">` : ''}
+        <button onclick="responder(0)">${q.alternativas[0]}</button>
+        <button onclick="responder(1)">${q.alternativas[1]}</button>
+        <button onclick="responder(2)">${q.alternativas[2]}</button>
+        <button onclick="responder(3)">${q.alternativas[3]}</button>
+      `;
+
+      simuladoDiv.appendChild(questaoDiv);
+    }
+
+    function responder(escolha) {
+      if (questoes[indexAtual].correta === escolha) acertos++;
+      indexAtual++;
+      mostrarQuestao();
+    }
+
+    function mostrarResultado() {
+      document.getElementById('simulado').style.display = 'none';
+      const total = questoes.length;
+      const resultado = `Parabéns, ${nomeAluno}!<br>Você acertou <strong>${acertos}</strong> de <strong>${total}</strong> questões.`;
+      document.getElementById('resultado').innerHTML = resultado;
+      document.getElementById('resultado').style.display = 'block';
+
+      db.ref('resultados').push({
+        nome: nomeAluno,
+        acertos,
+        total,
+        data: new Date().toLocaleString()
+      });
+    }
 
     function salvarQuestao() {
       const pergunta = document.getElementById('pergunta').value;
@@ -138,25 +232,24 @@
         const reader = new FileReader();
         reader.onloadend = function () {
           const base64Image = reader.result.split(',')[1];
-          const imgbbApiKey = "d056167034b575a0ca7ff0bc843628a5"; // <-- Substitua aqui
+          const imgbbApiKey = "d056167034b575a0ca7ff0bc843628a5";
 
           fetch(`https://api.imgbb.com/1/upload?key=${imgbbApiKey}`, {
             method: "POST",
             body: new URLSearchParams({ image: base64Image })
           })
-          .then(res => res.json())
-          .then(data => {
-            novaQuestao.imagem = data.data.url;
-            salvarNoFirebase(novaQuestao);
-          })
-          .catch(err => alert("Erro ao enviar imagem: " + err));
+            .then(res => res.json())
+            .then(data => {
+              novaQuestao.imagem = data.data.url;
+              salvarNoFirebase(novaQuestao);
+            })
+            .catch(err => alert("Erro ao enviar imagem: " + err));
         };
         reader.readAsDataURL(imagemFile);
       } else {
         salvarNoFirebase(novaQuestao);
       }
 
-      // Limpa os campos
       document.getElementById('pergunta').value = "";
       document.getElementById('alt1').value = "";
       document.getElementById('alt2').value = "";
