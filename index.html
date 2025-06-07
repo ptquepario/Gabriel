@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simulado</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado JS Cursos</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -12,258 +12,199 @@
       padding: 0;
       text-align: center;
     }
-    .container {
-      margin-top: 60px;
-    }
-    .card {
-      display: inline-block;
-      padding: 30px;
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      margin-bottom: 40px;
-      max-width: 90%;
-    }
-    input, textarea, select {
-      display: block;
-      margin: 10px auto;
-      padding: 10px;
-      width: 90%;
-      max-width: 400px;
-      border: 2px solid red;
-      border-radius: 6px;
-    }
-    button {
-      background-color: red;
+    .hidden { display: none; }
+    .btn {
+      background: red;
       color: white;
       border: none;
-      padding: 12px 20px;
-      border-radius: 6px;
+      padding: 10px 20px;
+      margin: 10px;
       cursor: pointer;
-      font-size: 16px;
-      margin-top: 10px;
+      border-radius: 5px;
     }
-    #formQuestao, #simulado, #resultado {
-      display: none;
+    input, select, textarea {
+      margin: 5px;
+      padding: 10px;
+      width: 80%;
+      max-width: 300px;
+      border: 2px solid red;
+      border-radius: 5px;
     }
-    #cadeado {
+    .lock {
       position: fixed;
       top: 10px;
       right: 10px;
-      font-size: 28px;
       cursor: pointer;
+      font-size: 24px;
     }
-    .questao {
+    .question-card {
       margin: 20px auto;
-      padding: 20px;
-      border: 2px solid #ccc;
-      border-radius: 12px;
-      max-width: 90%;
-    }
-    .questao img {
-      max-width: 100%;
-      margin-top: 10px;
+      padding: 15px;
+      max-width: 500px;
+      border: 1px solid red;
+      border-radius: 10px;
     }
   </style>
 </head>
 <body>
 
-  <div id="cadeado">🔒</div>
-
-  <div class="container">
-    <!-- TELA INICIAL -->
-    <div id="inicio" class="card">
-      <img src="logo.png" alt="Logo do Curso" style="max-width: 200px;">
-      <h2>Simulado Online</h2>
-      <input type="text" id="nomeAluno" placeholder="Digite seu nome completo">
-      <button onclick="iniciarSimulado()">Iniciar Simulado</button>
-    </div>
-
-    <!-- QUESTÕES -->
-    <div id="simulado"></div>
-
-    <!-- RESULTADO -->
-    <div id="resultado" class="card"></div>
-
-    <!-- FORMULÁRIO PARA ADICIONAR QUESTÃO -->
-    <div id="formQuestao">
-      <h2>Adicionar Questão</h2>
-      <input type="password" id="senha" placeholder="Senha">
-      <textarea id="pergunta" placeholder="Pergunta"></textarea>
-      <input type="text" id="alt1" placeholder="Alternativa 1">
-      <input type="text" id="alt2" placeholder="Alternativa 2">
-      <input type="text" id="alt3" placeholder="Alternativa 3">
-      <input type="text" id="alt4" placeholder="Alternativa 4">
-      <select id="correta">
-        <option value="">Alternativa Correta</option>
-        <option value="0">Alternativa 1</option>
-        <option value="1">Alternativa 2</option>
-        <option value="2">Alternativa 3</option>
-        <option value="3">Alternativa 4</option>
-      </select>
-      <input type="file" id="imagem" accept="image/*">
-      <button onclick="salvarQuestao()">Salvar Questão</button>
-    </div>
+  <div id="telaInicio">
+    <img src="iv_1_jscursos.png" alt="Logo" width="150"><br>
+    <h2>Bem-vindo ao Simulado</h2>
+    <input type="text" id="nomeUsuario" placeholder="Digite seu nome completo" required>
+    <br>
+    <button class="btn" onclick="iniciarSimulado()">Iniciar</button>
   </div>
 
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-  <script>
-    const firebaseConfig = {
-      apiKey: "SUA_API_KEY_DO_FIREBASE",
-      authDomain: "SEU_DOMINIO.firebaseapp.com",
-      databaseURL: "https://SEU_PROJETO.firebaseio.com",
-      projectId: "SEU_PROJETO",
-      storageBucket: "SEU_PROJETO.appspot.com",
-      messagingSenderId: "SEU_ID",
-      appId: "SEU_APP_ID"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-  </script>
+  <div id="simulado" class="hidden">
+    <div id="areaQuestoes"></div>
+    <button class="btn" onclick="finalizarSimulado()">Finalizar</button>
+  </div>
+
+  <div id="telaResultado" class="hidden">
+    <h2>Resultado</h2>
+    <p id="pontuacaoFinal"></p>
+    <button class="btn" onclick="location.reload()">Voltar ao Início</button>
+  </div>
+
+  <div class="lock" onclick="mostrarLoginAdm()">🔒</div>
+
+  <div id="loginAdm" class="hidden">
+    <h3>Área Administrativa</h3>
+    <input type="text" id="login" placeholder="Login"><br>
+    <input type="password" id="senha" placeholder="Senha"><br>
+    <button class="btn" onclick="validarAdm()">Entrar</button>
+  </div>
+
+  <div id="painelAdm" class="hidden">
+    <h3>Adicionar Questão</h3>
+    <input type="text" id="pergunta" placeholder="Pergunta"><br>
+    <input type="text" id="a" placeholder="Alternativa 1"><br>
+    <input type="text" id="b" placeholder="Alternativa 2"><br>
+    <input type="text" id="c" placeholder="Alternativa 3"><br>
+    <input type="text" id="d" placeholder="Alternativa 4"><br>
+    <select id="correta">
+      <option value="">Alternativa Correta</option>
+      <option value="a">Alternativa 1</option>
+      <option value="b">Alternativa 2</option>
+      <option value="c">Alternativa 3</option>
+      <option value="d">Alternativa 4</option>
+    </select><br>
+    <button class="btn" onclick="adicionarQuestao()">Salvar Questão</button>
+
+    <h3>Questões Existentes</h3>
+    <div id="listaQuestoes"></div>
+  </div>
 
   <script>
-    let questoes = [];
-    let indexAtual = 0;
-    let acertos = 0;
-    let nomeAluno = "";
-
-    const senhaCorreta = "1234"; // Altere aqui
-
-    document.getElementById('cadeado').onclick = function () {
-      const senha = prompt("Digite a senha:");
-      if (senha === senhaCorreta) {
-        document.getElementById('formQuestao').style.display = 'block';
-      } else {
-        alert("Senha incorreta!");
-      }
-    };
+    let questoes = JSON.parse(localStorage.getItem("questoes")) || [];
 
     function iniciarSimulado() {
-      nomeAluno = document.getElementById('nomeAluno').value.trim();
-      if (!nomeAluno) {
-        alert("Digite seu nome completo.");
+      const nome = document.getElementById("nomeUsuario").value.trim();
+      if (!nome) {
+        alert("Digite seu nome!");
         return;
       }
-      document.getElementById('inicio').style.display = 'none';
-      carregarQuestoes();
-    }
+      if (questoes.length === 0) {
+        alert("Nenhuma questão cadastrada!");
+        return;
+      }
 
-    function carregarQuestoes() {
-      db.ref('questoes').once('value', snapshot => {
-        questoes = [];
-        snapshot.forEach(child => {
-          questoes.push(child.val());
-        });
-        mostrarQuestao();
+      localStorage.setItem("nomeUsuario", nome);
+      document.getElementById("telaInicio").classList.add("hidden");
+      document.getElementById("simulado").classList.remove("hidden");
+
+      const area = document.getElementById("areaQuestoes");
+      area.innerHTML = "";
+
+      questoes.forEach((q, i) => {
+        const div = document.createElement("div");
+        div.className = "question-card";
+        div.innerHTML = `
+          <p><strong>${i+1}.</strong> ${q.pergunta}</p>
+          <label><input type="radio" name="q${i}" value="a"> ${q.a}</label><br>
+          <label><input type="radio" name="q${i}" value="b"> ${q.b}</label><br>
+          <label><input type="radio" name="q${i}" value="c"> ${q.c}</label><br>
+          <label><input type="radio" name="q${i}" value="d"> ${q.d}</label><br>
+        `;
+        area.appendChild(div);
       });
     }
 
-    function mostrarQuestao() {
-      const simuladoDiv = document.getElementById('simulado');
-      simuladoDiv.innerHTML = '';
-      document.getElementById('simulado').style.display = 'block';
-
-      if (indexAtual >= questoes.length) {
-        mostrarResultado();
-        return;
-      }
-
-      const q = questoes[indexAtual];
-      const questaoDiv = document.createElement('div');
-      questaoDiv.className = 'questao';
-
-      questaoDiv.innerHTML = `
-        <h3>${q.pergunta}</h3>
-        ${q.imagem ? `<img src="${q.imagem}" alt="Imagem da Questão">` : ''}
-        <button onclick="responder(0)">${q.alternativas[0]}</button>
-        <button onclick="responder(1)">${q.alternativas[1]}</button>
-        <button onclick="responder(2)">${q.alternativas[2]}</button>
-        <button onclick="responder(3)">${q.alternativas[3]}</button>
-      `;
-
-      simuladoDiv.appendChild(questaoDiv);
-    }
-
-    function responder(escolha) {
-      if (questoes[indexAtual].correta === escolha) acertos++;
-      indexAtual++;
-      mostrarQuestao();
-    }
-
-    function mostrarResultado() {
-      document.getElementById('simulado').style.display = 'none';
-      const total = questoes.length;
-      const resultado = `Parabéns, ${nomeAluno}!<br>Você acertou <strong>${acertos}</strong> de <strong>${total}</strong> questões.`;
-      document.getElementById('resultado').innerHTML = resultado;
-      document.getElementById('resultado').style.display = 'block';
-
-      db.ref('resultados').push({
-        nome: nomeAluno,
-        acertos,
-        total,
-        data: new Date().toLocaleString()
+    function finalizarSimulado() {
+      let acertos = 0;
+      const nome = localStorage.getItem("nomeUsuario");
+      questoes.forEach((q, i) => {
+        const resposta = document.querySelector(`input[name="q${i}"]:checked`);
+        if (resposta && resposta.value === q.correta) {
+          acertos++;
+        }
       });
+
+      document.getElementById("simulado").classList.add("hidden");
+      document.getElementById("telaResultado").classList.remove("hidden");
+      document.getElementById("pontuacaoFinal").innerText = `${nome}, você acertou ${acertos} de ${questoes.length} questões.`;
+
+      // salvar pontuação (se quiser usar depois)
+      const historico = JSON.parse(localStorage.getItem("historico") || "[]");
+      historico.push({ nome, acertos, total: questoes.length, data: new Date().toLocaleString() });
+      localStorage.setItem("historico", JSON.stringify(historico));
     }
 
-    function salvarQuestao() {
-      const pergunta = document.getElementById('pergunta').value;
-      const alt1 = document.getElementById('alt1').value;
-      const alt2 = document.getElementById('alt2').value;
-      const alt3 = document.getElementById('alt3').value;
-      const alt4 = document.getElementById('alt4').value;
-      const correta = document.getElementById('correta').value;
-      const imagemFile = document.getElementById('imagem').files[0];
+    function mostrarLoginAdm() {
+      document.getElementById("loginAdm").classList.toggle("hidden");
+    }
 
-      if (!pergunta || !alt1 || !alt2 || !alt3 || !alt4 || correta === "") {
-        alert("Preencha todos os campos.");
-        return;
-      }
-
-      const novaQuestao = {
-        pergunta,
-        alternativas: [alt1, alt2, alt3, alt4],
-        correta: Number(correta),
-        imagem: ""
-      };
-
-      if (imagemFile) {
-        const reader = new FileReader();
-        reader.onloadend = function () {
-          const base64Image = reader.result.split(',')[1];
-          const imgbbApiKey = "d056167034b575a0ca7ff0bc843628a5";
-
-          fetch(`https://api.imgbb.com/1/upload?key=${imgbbApiKey}`, {
-            method: "POST",
-            body: new URLSearchParams({ image: base64Image })
-          })
-            .then(res => res.json())
-            .then(data => {
-              novaQuestao.imagem = data.data.url;
-              salvarNoFirebase(novaQuestao);
-            })
-            .catch(err => alert("Erro ao enviar imagem: " + err));
-        };
-        reader.readAsDataURL(imagemFile);
+    function validarAdm() {
+      const login = document.getElementById("login").value;
+      const senha = document.getElementById("senha").value;
+      if (login === "junior" && senha === "jscursos") {
+        document.getElementById("loginAdm").classList.add("hidden");
+        document.getElementById("painelAdm").classList.remove("hidden");
+        atualizarListaQuestoes();
       } else {
-        salvarNoFirebase(novaQuestao);
+        alert("Login ou senha incorretos");
       }
-
-      document.getElementById('pergunta').value = "";
-      document.getElementById('alt1').value = "";
-      document.getElementById('alt2').value = "";
-      document.getElementById('alt3').value = "";
-      document.getElementById('alt4').value = "";
-      document.getElementById('correta').value = "";
-      document.getElementById('imagem').value = "";
     }
 
-    function salvarNoFirebase(questao) {
-      db.ref('questoes').push(questao)
-        .then(() => alert("Questão adicionada com sucesso!"))
-        .catch(err => alert("Erro ao salvar questão: " + err));
+    function adicionarQuestao() {
+      const pergunta = document.getElementById("pergunta").value;
+      const a = document.getElementById("a").value;
+      const b = document.getElementById("b").value;
+      const c = document.getElementById("c").value;
+      const d = document.getElementById("d").value;
+      const correta = document.getElementById("correta").value;
+
+      if (!pergunta || !a || !b || !c || !d || !correta) {
+        alert("Preencha todos os campos");
+        return;
+      }
+
+      questoes.push({ pergunta, a, b, c, d, correta });
+      localStorage.setItem("questoes", JSON.stringify(questoes));
+      alert("Questão salva!");
+      atualizarListaQuestoes();
+    }
+
+    function removerQuestao(index) {
+      if (confirm("Deseja remover esta questão?")) {
+        questoes.splice(index, 1);
+        localStorage.setItem("questoes", JSON.stringify(questoes));
+        atualizarListaQuestoes();
+      }
+    }
+
+    function atualizarListaQuestoes() {
+      const lista = document.getElementById("listaQuestoes");
+      lista.innerHTML = "";
+      questoes.forEach((q, i) => {
+        const div = document.createElement("div");
+        div.innerHTML = `<strong>${i + 1}.</strong> ${q.pergunta}
+          <button onclick="removerQuestao(${i})">Remover</button><hr>`;
+        lista.appendChild(div);
+      });
     }
   </script>
+
 </body>
 </html>
