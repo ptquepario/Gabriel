@@ -1,176 +1,179 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Simulado</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      text-align: center;
-      background: #fff;
       margin: 0;
-      padding: 0;
-    }
-    .container {
-      margin-top: 60px;
+      background: #f8f8f8;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
     }
     .card {
-      display: inline-block;
+      background: white;
       padding: 30px;
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      margin-bottom: 40px;
+      border-radius: 10px;
+      box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+      text-align: center;
+      max-width: 500px;
     }
-    input, textarea, select {
-      display: block;
-      margin: 10px auto;
-      padding: 10px;
-      width: 80%;
-      max-width: 400px;
-      border: 2px solid red;
-      border-radius: 6px;
-    }
-    button {
-      background-color: red;
+    .btn {
+      background: #e60000;
       color: white;
+      padding: 10px 20px;
       border: none;
-      padding: 12px 20px;
-      border-radius: 6px;
+      margin-top: 20px;
       cursor: pointer;
       font-size: 16px;
+      border-radius: 5px;
+    }
+    #questoes {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 30px;
+    }
+    .questao {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 600px;
+      box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+    }
+    .questao img {
+      max-width: 100%;
       margin-top: 10px;
     }
-    #formQuestao {
-      display: none;
-    }
-    #cadeado {
-      position: fixed;
-      top: 10px;
-      right: 10px;
-      font-size: 28px;
+    .icone-cadeado {
+      position: absolute;
+      top: 20px;
+      right: 20px;
       cursor: pointer;
+    }
+    #formulario {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      max-width: 400px;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      font-size: 14px;
     }
   </style>
 </head>
 <body>
 
-  <div id="cadeado">🔒</div>
+<div id="inicio" class="card">
+  <h2>Bem-vindo ao Simulado!</h2>
+  <button class="btn" onclick="iniciarSimulado()">Iniciar</button>
+</div>
 
-  <div class="container">
-    <div class="card">
-      <h2>Bem-vindo ao Simulado!</h2>
-      <p>Em breve as questões aparecerão aqui.</p>
-    </div>
+<div id="questoes"></div>
 
-    <div id="formQuestao">
-      <h2>Adicionar Questão</h2>
-      <input type="password" id="senha" placeholder="Senha">
-      <textarea id="pergunta" placeholder="Pergunta"></textarea>
-      <input type="text" id="alt1" placeholder="Alternativa 1">
-      <input type="text" id="alt2" placeholder="Alternativa 2">
-      <input type="text" id="alt3" placeholder="Alternativa 3">
-      <input type="text" id="alt4" placeholder="Alternativa 4">
-      <select id="correta">
-        <option value="">Alternativa Correta</option>
-        <option value="0">Alternativa 1</option>
-        <option value="1">Alternativa 2</option>
-        <option value="2">Alternativa 3</option>
-        <option value="3">Alternativa 4</option>
-      </select>
-      <input type="file" id="imagem" accept="image/*">
-      <button onclick="salvarQuestao()">Salvar Questão</button>
-    </div>
-  </div>
+<div class="icone-cadeado" onclick="pedirSenha()">🔒</div>
 
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-  <script>
-    const firebaseConfig = {
-      apiKey: "SUA_API_KEY_DO_FIREBASE",
-      authDomain: "SEU_DOMINIO.firebaseapp.com",
-      databaseURL: "https://SEU_PROJETO.firebaseio.com",
-      projectId: "SEU_PROJETO",
-      storageBucket: "SEU_PROJETO.appspot.com",
-      messagingSenderId: "SEU_ID",
-      appId: "SEU_APP_ID"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-  </script>
+<div id="formulario">
+  <input type="text" id="pergunta" placeholder="Digite a pergunta">
+  <input type="text" id="alternativas" placeholder="Alternativas separadas por vírgula">
+  <input type="text" id="correta" placeholder="Resposta correta">
+  <input type="text" id="imagem" placeholder="URL da imagem (opcional)">
+  <button class="btn" onclick="adicionarQuestao()">Adicionar</button>
+</div>
 
-  <script>
-    const senhaCorreta = "1234"; // Altere sua senha aqui
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+  import { getDatabase, ref, set, push, onValue } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
 
-    document.getElementById('cadeado').onclick = function () {
-      const senha = prompt("Digite a senha:");
-      if (senha === senhaCorreta) {
-        document.getElementById('formQuestao').style.display = 'block';
-      } else {
-        alert("Senha incorreta!");
-      }
-    };
+  // 🔁 Substitua com a SUA configuração do Firebase
+  const firebaseConfig = {
+    apiKey: "SUA_API_KEY",
+    authDomain: "SEU_AUTH_DOMAIN",
+    databaseURL: "https://SEU_DATABASE.firebaseio.com",
+    projectId: "SEU_PROJECT_ID",
+    storageBucket: "SEU_STORAGE_BUCKET",
+    messagingSenderId: "SEU_SENDER_ID",
+    appId: "SEU_APP_ID"
+  };
 
-    function salvarQuestao() {
-      const pergunta = document.getElementById('pergunta').value;
-      const alt1 = document.getElementById('alt1').value;
-      const alt2 = document.getElementById('alt2').value;
-      const alt3 = document.getElementById('alt3').value;
-      const alt4 = document.getElementById('alt4').value;
-      const correta = document.getElementById('correta').value;
-      const imagemFile = document.getElementById('imagem').files[0];
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
 
-      if (!pergunta || !alt1 || !alt2 || !alt3 || !alt4 || correta === "") {
-        alert("Preencha todos os campos.");
-        return;
-      }
+  const inicio = document.getElementById("inicio");
+  const questoes = document.getElementById("questoes");
+  const formulario = document.getElementById("formulario");
 
-      const novaQuestao = {
-        pergunta,
-        alternativas: [alt1, alt2, alt3, alt4],
-        correta: Number(correta),
-        imagem: ""
-      };
+  function iniciarSimulado() {
+    inicio.style.display = "none";
+    questoes.style.display = "flex";
+    carregarQuestoes();
+  }
 
-      if (imagemFile) {
-        const reader = new FileReader();
-        reader.onloadend = function () {
-          const base64Image = reader.result.split(',')[1];
-          const imgbbApiKey = "d056167034b575a0ca7ff0bc843628a5"; // <-- Substitua aqui
+  function carregarQuestoes() {
+    questoes.innerHTML = "";
+    const questoesRef = ref(db, 'questoes');
+    onValue(questoesRef, (snapshot) => {
+      snapshot.forEach((child) => {
+        const q = child.val();
+        const div = document.createElement("div");
+        div.className = "questao";
+        div.innerHTML = `<h3>${q.pergunta}</h3>`;
+        if (q.imagem) {
+          div.innerHTML += `<img src="${q.imagem}" alt="Imagem da questão">`;
+        }
+        const alts = q.alternativas.split(',');
+        alts.forEach(alt => {
+          div.innerHTML += `<p><input type="radio" name="${q.pergunta}"> ${alt.trim()}</p>`;
+        });
+        questoes.appendChild(div);
+      });
+    });
+  }
 
-          fetch(`https://api.imgbb.com/1/upload?key=${imgbbApiKey}`, {
-            method: "POST",
-            body: new URLSearchParams({ image: base64Image })
-          })
-          .then(res => res.json())
-          .then(data => {
-            novaQuestao.imagem = data.data.url;
-            salvarNoFirebase(novaQuestao);
-          })
-          .catch(err => alert("Erro ao enviar imagem: " + err));
-        };
-        reader.readAsDataURL(imagemFile);
-      } else {
-        salvarNoFirebase(novaQuestao);
-      }
-
-      // Limpa os campos
-      document.getElementById('pergunta').value = "";
-      document.getElementById('alt1').value = "";
-      document.getElementById('alt2').value = "";
-      document.getElementById('alt3').value = "";
-      document.getElementById('alt4').value = "";
-      document.getElementById('correta').value = "";
-      document.getElementById('imagem').value = "";
+  function pedirSenha() {
+    const senha = prompt("Digite a senha:");
+    if (senha === "123") {
+      formulario.style.display = "flex";
+    } else {
+      alert("Senha incorreta!");
     }
+  }
 
-    function salvarNoFirebase(questao) {
-      db.ref('questoes').push(questao)
-        .then(() => alert("Questão adicionada com sucesso!"))
-        .catch(err => alert("Erro ao salvar questão: " + err));
-    }
-  </script>
+  function adicionarQuestao() {
+    const pergunta = document.getElementById("pergunta").value;
+    const alternativas = document.getElementById("alternativas").value;
+    const correta = document.getElementById("correta").value;
+    const imagem = document.getElementById("imagem").value;
+
+    const novaRef = push(ref(db, 'questoes'));
+    set(novaRef, {
+      pergunta,
+      alternativas,
+      correta,
+      imagem
+    });
+
+    alert("Questão adicionada!");
+    document.getElementById("pergunta").value = "";
+    document.getElementById("alternativas").value = "";
+    document.getElementById("correta").value = "";
+    document.getElementById("imagem").value = "";
+    formulario.style.display = "none";
+  }
+</script>
+
 </body>
 </html>
